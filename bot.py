@@ -54,7 +54,6 @@ def send_random_cat_gif(message):
 @bot.message_handler(func=lambda message: message.text == "Picture with text")
 def prompt_cat_saying(message):
     chats[message.chat.id] = {}
-    print(chats)
     bot.send_message(
         message.chat.id, "Please enter the text you want the cat to say:", reply_markup=markup)
     bot.register_next_step_handler(message, choose_color)
@@ -62,7 +61,6 @@ def prompt_cat_saying(message):
 
 def choose_color(message):
     chats[message.chat.id]['text'] = message.text
-    print(chats)
     markup_inline = types.InlineKeyboardMarkup()
     btn_black = types.InlineKeyboardButton("Black", callback_data="black")
     btn_white = types.InlineKeyboardButton("White", callback_data="white")
