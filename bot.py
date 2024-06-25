@@ -14,8 +14,6 @@ markup.row(btn3)
 
 chats = {}
 
-print(chats)
-
 @bot.message_handler(commands=['start', 'help', 'menu'])
 def menu(message):
     bot.send_message(
