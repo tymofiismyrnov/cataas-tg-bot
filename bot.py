@@ -88,4 +88,8 @@ def send_cat_saying(call):
 
 
 if __name__ == '__main__':
-    bot.infinity_polling()
+    try:
+        bot.infinity_polling()
+    except Exception as e:
+        print(e)
+        exit
