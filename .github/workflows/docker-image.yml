@@ -19,6 +19,9 @@ jobs:
       - name: check var
         run: echo ${GITHUB_SHA}
 
+      - name: check var 2
+        run: echo ${GITHUB_SHA::7}
+
       # - uses: mr-smithers-excellent/docker-build-push@v6
       #   name: Build & push Docker image
       #   with:
