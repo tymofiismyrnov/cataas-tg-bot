@@ -53,7 +53,7 @@ def send_random_cat_pic(message):
 @bot.message_handler(func=lambda message: message.text == "Gif")
 def send_random_cat_gif(message):
     bot.send_message(
-        message.chat.id, "Fetching a gif....this might take a couple of seconds")
+        message.chat.id, "Getting your gif. Wait a second please...")
     try:
         response = requests.get("https://cataas.com/cat/gif")
         if response.status_code == 200:
