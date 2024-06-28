@@ -3,7 +3,23 @@ from telebot import types
 import requests
 import os
 
+
+description_text = """
+This bot returns a random cat picture or gif, or a picture with text that you type in.
+
+There are currently three buttons for each action. The functionality will likely expand in the future.
+
+Bot uses https://cataas.com/ API, authored by https://twitter.com/kevinbalicot
+
+Source: https://github.com/tymofiismyrnov/cataas-tg-bot
+Feel free to contribute
+
+Run /start to begin
+"""
+
 bot = telebot.TeleBot(os.getenv('TG_BOT_TOKEN'))
+bot.set_my_description(description_text)
+bot.set_my_short_description("Get a random cat pic with your text")
 
 markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 btn1 = types.KeyboardButton("Picture")
@@ -13,6 +29,7 @@ markup.row(btn1, btn2)
 markup.row(btn3)
 
 chats = {}
+
 
 @bot.message_handler(commands=['start', 'help', 'menu'])
 def menu(message):
@@ -88,8 +105,4 @@ def send_cat_saying(call):
 
 
 if __name__ == '__main__':
-    try:
-        bot.infinity_polling()
-    except Exception as e:
-        print(e)
-        exit
+    bot.infinity_polling()
