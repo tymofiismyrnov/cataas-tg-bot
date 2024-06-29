@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 import requests
 import os
-
+from keyboards import menu_kb, main_kb, color_kb
 
 description_text = """
 This bot returns a random cat picture or gif, or a picture with text that you type in.
@@ -21,12 +21,6 @@ bot = telebot.TeleBot(os.getenv('TG_BOT_TOKEN'))
 bot.set_my_description(description_text)
 bot.set_my_short_description("Get a random cat pic with your text")
 
-markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-btn1 = types.KeyboardButton("Picture")
-btn2 = types.KeyboardButton("Gif")
-btn3 = types.KeyboardButton("Picture with text")
-markup.row(btn1, btn2)
-markup.row(btn3)
 
 chats = {}
 
@@ -34,7 +28,13 @@ chats = {}
 @bot.message_handler(commands=['start', 'help', 'menu'])
 def menu(message):
     bot.send_message(
-        message.chat.id, "Select an option in the menu below 👇", reply_markup=markup)
+        message.chat.id, "Welcome to the *cat as a service* bot, press the menu button below to start", reply_markup=menu_kb, parse_mode="Markdown")
+
+
+@bot.message_handler(func=lambda message: message.text == "☰ Menu")
+def menu(message):
+    bot.send_message(
+        message.chat.id, "Select an option 👇", reply_markup=main_kb)
 
 
 @bot.message_handler(func=lambda message: message.text == "Picture")
@@ -72,36 +72,35 @@ def send_random_cat_gif(message):
 def prompt_cat_saying(message):
     chats[message.chat.id] = {}
     bot.send_message(
-        message.chat.id, "Please enter the text you want the cat to say:", reply_markup=markup)
+        message.chat.id, "Please enter the text you want the cat to say:", reply_markup=main_kb)
     bot.register_next_step_handler(message, choose_color)
 
 
 def choose_color(message):
+    if message.chat.id not in chats:
+        chats[message.chat.id] = {}
     chats[message.chat.id]['text'] = message.text
-    markup_inline = types.InlineKeyboardMarkup()
-    btn_black = types.InlineKeyboardButton("Black", callback_data="black")
-    btn_white = types.InlineKeyboardButton("White", callback_data="white")
-    markup_inline.add(btn_black, btn_white)
     bot.send_message(
-        message.chat.id, "Choose a color for the text:", reply_markup=markup_inline)
+        message.chat.id, "Choose a color for the text:", reply_markup=color_kb)
 
 
-@bot.callback_query_handler(func=lambda call: True)
-def send_cat_saying(call):
-    user_text = chats[call.message.chat.id]['text']
-    color = call.data
+@bot.message_handler(func=lambda message: message.text in ["Black", "White"])
+def send_cat_saying(message):
+    user_text = chats[message.chat.id].get('text')
+    color = message.text.lower()
     try:
         response = requests.get(
             f"https://cataas.com/cat/says/{user_text}?fontColor={color}&fontSize=50")
         if response.status_code == 200:
-            bot.send_photo(call.message.chat.id,
-                           response.content, reply_markup=markup)
+            bot.send_photo(message.chat.id, response.content,
+                           reply_markup=main_kb)
         else:
             bot.send_message(
-                call.message.chat.id, "Failed to fetch cat saying. Please try again.", reply_markup=markup)
+                message.chat.id, "Failed to fetch cat saying. Please try again.", reply_markup=main_kb)
     except Exception as e:
-        bot.send_message(call.message.chat.id, f"An error occurred: {
-                         e}", reply_markup=markup)
+        bot.send_message(
+            message.chat.id, f"An error occurred: {e}", reply_markup=main_kb
+        )
 
 
 if __name__ == '__main__':
