@@ -58,10 +58,12 @@ def send_random_cat_gif(message):
     try:
         response = requests.get("https://cataas.com/cat/gif")
         if response.status_code == 200:
-            with open("cat.gif", "wb") as file:
+            file_path = f"cat_{message.chat.id}.gif"
+            with open(file_path, "wb") as file:
                 file.write(response.content)
-            with open("cat.gif", "rb") as file:
+            with open(file_path, "rb") as file:
                 bot.send_animation(message.chat.id, file)
+            os.remove(file_path)
         else:
             bot.send_message(
                 message.chat.id, "Failed to fetch cat gif. Please try again."
@@ -122,14 +124,16 @@ def send_cat_saying(message):
         response = requests.get(endpoint)
         if response.status_code == 200:
             if request_type == "gif":
-                with open("cat_saying.gif", "wb") as file:
+                file_path = f"cat_saying_{message.chat.id}.gif"
+                with open(file_path, "wb") as file:
                     file.write(response.content)
-                with open("cat_saying.gif", "rb") as file:
+                with open(file_path, "rb") as file:
                     bot.send_animation(message.chat.id, file, reply_markup=post_gen_kb)
             else:
                 bot.send_photo(
                     message.chat.id, response.content, reply_markup=post_gen_kb
                 )
+            os.remove(file_path)  # Delete the file after sending
         else:
             bot.send_message(
                 message.chat.id,
