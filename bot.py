@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 import requests
 import os
-from keyboards import menu_kb, main_kb, color_kb
+from keyboards import menu_kb, main_kb, color_kb, post_gen_kb
 
 description_text = """
 This bot returns a random cat picture or gif, or a picture with text that you type in.
@@ -99,13 +99,17 @@ def choose_color(message):
 
 
 @bot.message_handler(func=lambda message: message.text in ["Black", "White"])
+def set_color_and_generate(message):
+    chats[message.chat.id]["color"] = message.text.lower()
+    send_cat_saying(message)
+
+
 def send_cat_saying(message):
     user_text = chats[message.chat.id].get("text")
-    color = message.text.lower()
+    color = chats[message.chat.id].get("color")
     request_type = chats[message.chat.id].get("type")
 
     if request_type == "gif":
-        bot.send_message(message.chat.id, "Getting your gif. Wait a second please...")
         endpoint = (
             f"https://cataas.com/cat/gif/says/{user_text}?fontColor={color}&fontSize=50"
         )
@@ -113,6 +117,7 @@ def send_cat_saying(message):
         endpoint = (
             f"https://cataas.com/cat/says/{user_text}?fontColor={color}&fontSize=50"
         )
+
     try:
         response = requests.get(endpoint)
         if response.status_code == 200:
@@ -120,9 +125,11 @@ def send_cat_saying(message):
                 with open("cat_saying.gif", "wb") as file:
                     file.write(response.content)
                 with open("cat_saying.gif", "rb") as file:
-                    bot.send_animation(message.chat.id, file, reply_markup=main_kb)
+                    bot.send_animation(message.chat.id, file, reply_markup=post_gen_kb)
             else:
-                bot.send_photo(message.chat.id, response.content, reply_markup=main_kb)
+                bot.send_photo(
+                    message.chat.id, response.content, reply_markup=post_gen_kb
+                )
         else:
             bot.send_message(
                 message.chat.id,
@@ -133,6 +140,17 @@ def send_cat_saying(message):
         bot.send_message(
             message.chat.id, f"An error occurred: {e}", reply_markup=main_kb
         )
+
+
+@bot.message_handler(func=lambda message: message.text == "Try Again")
+def try_again(message):
+    if message.chat.id in chats:
+        send_cat_saying(message)
+
+
+@bot.message_handler(func=lambda message: message.text == "Main Menu")
+def return_to_main_menu(message):
+    bot.send_message(message.chat.id, "Select an option 👇", reply_markup=main_kb)
 
 
 if __name__ == "__main__":

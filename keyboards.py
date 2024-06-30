@@ -19,6 +19,8 @@ color_btn1 = types.KeyboardButton("Black")
 color_btn2 = types.KeyboardButton("White")
 color_kb.row(color_btn1, color_btn2)
 
-redo_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-redo_btn1 = types.KeyboardButton("Repeat")
-rebo_btn2 = types.KeyboardButton("Return to the menu")
+post_gen_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+btn_try_again = types.KeyboardButton("Try Again")
+btn_main_menu = types.KeyboardButton("Main Menu")
+post_gen_kb.row(btn_try_again, btn_main_menu)
+
