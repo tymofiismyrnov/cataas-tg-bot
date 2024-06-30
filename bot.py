@@ -7,8 +7,6 @@ from keyboards import menu_kb, main_kb, color_kb
 description_text = """
 This bot returns a random cat picture or gif, or a picture with text that you type in.
 
-There are currently three buttons for each action. The functionality will likely expand in the future.
-
 Bot uses https://cataas.com/ API, authored by https://twitter.com/kevinbalicot
 
 Source: https://github.com/tymofiismyrnov/cataas-tg-bot
