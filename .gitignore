@@ -1,0 +1,6 @@
+*.sql
+*.gif
+settings.py
+venv
+.vscode
+__pycache__

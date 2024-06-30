@@ -1,0 +1,32 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    types: [ closed ]
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Check out code
+
+      - name: Set Docker tags
+        id: docker_tags
+        run: echo "tags=$(echo ${GITHUB_SHA} | cut -c1-7),latest" >> $GITHUB_ENV
+
+      - uses: mr-smithers-excellent/docker-build-push@v6
+        name: Build & push Docker image
+        with:
+          image: tymofiismyrnov/cataas-tg-bot
+          tags: ${{ env.tags }}
+          registry: docker.io
+          dockerfile: Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
