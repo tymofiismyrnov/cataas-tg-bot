@@ -54,7 +54,7 @@ def send_random_cat_pic(message):
 
 @bot.message_handler(func=lambda message: message.text == "Gif")
 def send_random_cat_gif(message):
-    bot.send_message(message.chat.id, "Getting your gif. Wait a second please...")
+    bot.send_message(message.chat.id, "Getting your gif. Just a sec...")
     try:
         response = requests.get("https://cataas.com/cat/gif")
         if response.status_code == 200:
@@ -124,6 +124,7 @@ def send_cat_saying(message):
         response = requests.get(endpoint)
         if response.status_code == 200:
             if request_type == "gif":
+                bot.send_message(message.chat.id, "Getting your gif. Just a sec...")
                 file_path = f"cat_saying_{message.chat.id}.gif"
                 with open(file_path, "wb") as file:
                     file.write(response.content)
@@ -133,7 +134,7 @@ def send_cat_saying(message):
                 bot.send_photo(
                     message.chat.id, response.content, reply_markup=post_gen_kb
                 )
-            os.remove(file_path)  # Delete the file after sending
+            os.remove(file_path)
         else:
             bot.send_message(
                 message.chat.id,
